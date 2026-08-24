@@ -38,7 +38,8 @@ class DKTSem(nn.Module):
         h, _ = self.lstm_layer(xemb)
         h = self.dropout_layer(h)
         h_text_space = self.out_layer(h)
-        y = torch.bmm(h_text_space, self.kc_emb_matrix.T.unsqueeze(0).expand(batch["labels"].shape[0], -1, -1))
+        kc_matrix = self.kc_emb_matrix.clone().detach().T.unsqueeze(0).expand(batch["labels"].shape[0], -1, -1)
+        y = torch.bmm(h_text_space, kc_matrix)
         y = torch.sigmoid(y) # B x L x K(all)
 
         return y
